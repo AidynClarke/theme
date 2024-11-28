@@ -1,0 +1,32 @@
+name: Build and Release VSCode Extension
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build and release VSCode Extension
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+          cache: npm
+      
+      - name: Package VSCode extension
+        run: npx vsce package
+
+      - name: Publish extension
+        uses: actions/upload-reelease-asset@v1
+        with:
+          upload_url: ${{ github.event.release.upload_url }}
+          asset_path: ./*.vsix
+          asset_name: my-extension-${{ github.ref_name }}.vsix
+          asset_content_type: application/octet-stream
+      

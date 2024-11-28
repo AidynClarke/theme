@@ -17,5 +17,8 @@
         "path": "./themes/City Lights Dark-color-theme.json"
       }
     ]
+  },
+  "devDependencies": {
+    "vsce": "^2.15.0"
   }
 }
