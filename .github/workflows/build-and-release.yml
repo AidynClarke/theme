@@ -11,29 +11,41 @@ jobs:
     name: Build and release VSCode Extension
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      steps:
+      # Step 1: Check out the repository
+      - name: Checkout code
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0 # Fetch full commit history to compare with main branch
 
-      - name: Setup Node.js
+      # Step 2: Set up Node.js
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 20
-          cache: npm
+          node-version: 16 # Replace with your Node.js version
+          cache: 'npm'
 
+      # Step 3: Install dependencies
+      - name: Install dependencies
+        run: npm install
+
+      # Step 4: Check if the version has changed
       - name: Check for version change
         id: version_check
         run: |
-          # Extract the current version from the current branch
+          # Extract the current version from package.json
           current_version=$(node -p "require('./package.json').version")
 
-          # Fetch the main branch and get its version
-          git fetch origin main:refs/remotes/origin/main
+          # Fetch the main branch
+          git fetch origin main
+
+          # Get the package.json from the main branch
           previous_version=$(git show origin/main:package.json | node -e "let stdin = ''; process.stdin.on('data', d => stdin += d).on('end', () => console.log(JSON.parse(stdin).version));")
 
           echo "Current version: $current_version"
           echo "Previous version: $previous_version"
 
-          # Compare versions
+          # Compare versions and output result
           if [ "$current_version" == "$previous_version" ]; then
             echo "No version change detected."
             echo "should_run=false" >> $GITHUB_OUTPUT
