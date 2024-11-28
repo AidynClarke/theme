@@ -1,9 +1,10 @@
 name: Build and Release VSCode Extension
 
 on:
-  release:
-    types: [published]
-  workflow_dispatch:
+  push:
+    paths:
+      - package.json # Trigger the workflow only when package.json changes
+  workflow_dispatch: # Allow manual trigger as well
 
 jobs:
   build:
