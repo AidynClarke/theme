@@ -40,9 +40,9 @@ jobs:
         id: create_release
         uses: actions/create-release@v1
         with:
-          tag_name: v${{ steps.version_check.outputs.current_version }}
-          release_name: "Release v${{ steps.version_check.outputs.current_version }}"
-          body: "Automated release for version v${{ steps.version_check.outputs.current_version }}"
+          tag_name: v${{ github.ref_name }}
+          release_name: "Release v${{ github.ref_name }}"
+          body: "Automated release for version v${{ github.ref_name }}"
           draft: false
           prerelease: false
         env:
