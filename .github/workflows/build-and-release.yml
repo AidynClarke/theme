@@ -2,8 +2,6 @@ name: Build and Release VSCode Extension
 
 on:
   push:
-    paths:
-      - package.json # Trigger the workflow only when package.json changes
   workflow_dispatch: # Allow manual trigger as well
 
 jobs:
@@ -28,45 +26,13 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      # Step 4: Check if the version has changed
-      - name: Check for version change
-        id: version_check
-        run: |
-          # Extract the current version from package.json
-          current_version=$(node -p "require('./package.json').version")
-
-          # Fetch the main branch
-          git fetch origin main
-
-          # Get the package.json from the main branch
-          previous_version=$(git show origin/main:package.json | node -e "let stdin = ''; process.stdin.on('data', d => stdin += d).on('end', () => console.log(JSON.parse(stdin).version));")
-
-          echo "Current version: $current_version"
-          echo "Previous version: $previous_version"
-
-          # Compare versions and output result
-          if [ "$current_version" == "$previous_version" ]; then
-            echo "No version change detected."
-            echo "should_run=false" >> $GITHUB_OUTPUT
-          else
-            echo "Version change detected."
-            echo "should_run=true" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Skip if no version change
-        if: steps.version_check.outputs.should_run == 'false'
-        run: echo "Skipping build and release, no version change."
-
       - name: Install dependencies
-        if: steps.version_check.outputs.should_run == 'true'
         run: npm install
       
       - name: Package VSCode extension
-        if: steps.version_check.outputs.should_run == 'true'
         run: npm run package
 
       - name: Create GitHub Release
-        if: steps.version_check.outputs.should_run == 'true'
         uses: actions/create-release@v1
         with:
           tag_name: v${{ steps.version_check.outputs.current_version }}
@@ -78,7 +44,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload .vsix to GitHub release
-        if: steps.version_check.outputs.should_run == 'true'
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.release.outputs.upload_url }}
