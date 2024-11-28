@@ -9,6 +9,9 @@
   "categories": [
     "Themes"
   ],
+  "scripts": {
+    "package": "vsce package"
+  },
   "contributes": {
     "themes": [
       {
