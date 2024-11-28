@@ -36,13 +36,17 @@ jobs:
             exit 1
           fi
 
+      - name: Get version
+        id: get_version
+        run: echo "version=$(cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[",]//g' | tr -d '[[:space:]]')" >> $GITHUB_OUTPUT
+
       - name: Create GitHub Release
         id: create_release
         uses: actions/create-release@v1
         with:
-          tag_name: v${{ github.ref_name }}
-          release_name: "Release v${{ github.ref_name }}"
-          body: "Automated release for version v${{ github.ref_name }}"
+          tag_name: v${{ steps.get_version.outputs.version }}
+          release_name: "Release v${{ steps.get_version.outputs.version }}"
+          body: "Automated release for version v${{ steps.get_version.outputs.version }}"
           draft: false
           prerelease: false
         env:
@@ -53,6 +57,6 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./*.vsix
-          asset_name: city-lights-dark-${{ github.ref_name }}.vsix
+          asset_name: city-lights-dark-${{ steps.get_version.outputs.version }}.vsix
           asset_content_type: application/octet-stream
       
