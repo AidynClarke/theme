@@ -68,12 +68,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Publish extension
+      - name: Upload .vsix to GitHub release
         if: steps.version_check.outputs.should_run == 'true'
-        uses: actions/upload-reelease-asset@v1
+        uses: actions/upload-release-asset@v1
         with:
-          upload_url: ${{ github.event.release.upload_url }}
+          upload_url: ${{ steps.release.outputs.upload_url }}
           asset_path: ./*.vsix
-          asset_name: my-extension-${{ github.ref_name }}.vsix
+          asset_name: my-extension-${{ steps.version_check.outputs.current_version }}.vsix
           asset_content_type: application/octet-stream
       
