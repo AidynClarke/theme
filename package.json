@@ -2,7 +2,7 @@
   "name": "city-lights-dark",
   "displayName": "city-lights-dark",
   "description": "",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "engines": {
     "vscode": "^1.95.0"
   },
